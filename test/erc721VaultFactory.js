@@ -32,13 +32,22 @@ describe("ERC721 Vault Factory contract", function() {
         ERC721_contract = await ERC721.deploy(); // Params are with the contract: ERC721("Test-NFT","t-nft")
 
 
+        ERC721_contract.mint(owner.address, 1);
+
+        ERC721_contract.setApprovalForAll(factory_contract.address, true);
+``
+        // factory.mint("Test-NFT", "t-nft",ERC721_contract.address, 1, 100e18, 1e18, 50 )
+        
+        
+
     });
 
 
-    it("test deployment", async function() {
+    it("test NFT deployment", async function() {
 
         expect(await ERC721_contract.name()).to.equal("Test-NFT");
 
+        expect(await ERC721_contract.ownerOf(1)).to.equal(owner.address);
 
 
     });
