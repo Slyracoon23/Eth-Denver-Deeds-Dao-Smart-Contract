@@ -14,7 +14,7 @@ import "./Settings.sol";
 import "./OpenZeppelin/upgradeable/token/ERC721/utils/ERC721HolderUpgradeable.sol";
 import "./OpenZeppelin/upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
-contract TokenVault is ERC20Upgradeable, ERC721HolderUpgradeable, Ownable {
+contract TokenVault is ERC721HolderUpgradeable, Ownable {
     using Address for address;
 
     /// -----------------------------------
@@ -73,17 +73,13 @@ contract TokenVault is ERC20Upgradeable, ERC721HolderUpgradeable, Ownable {
 
     function initialize(address _curator, address _token, uint256 _id, uint256 _supply, uint256 _listPrice, uint256 _fee, string memory _name, string memory _symbol) external initializer {
         // initialize inherited contracts
-        __ERC20_init(_name, _symbol);
-        __ERC721Holder_init();
+        __ERC721Holder_init(_name, _symbol );
         // set storage variables
         token = _token;
         id = _id;
 
-        listPrice = _listPrice;
-        pricePerToken = _pricePerToken;
-        maxTotalSupply = _maxTotalSupply;
 
-        _mint(_curator, _supply);
+        _mint(_curator, 1);
 
 
     }
@@ -110,45 +106,9 @@ contract TokenVault is ERC20Upgradeable, ERC721HolderUpgradeable, Ownable {
     /// -------- CORE FUNCTIONS --------
     /// --------------------------------
 
-    function buy(uint256 _ammount) public payable {
-            require(msg.vaule == _ammount * tokenPrice, "Need to send exact amount of wei");
 
-             /*
-            * sends the requested amount of tokens
-            * from this contract address
-            * to the buyer
-            */
-            transfer(msg.sender, _ammount);
-           
-
-        }
-
-
-    /// @notice an external function to burn ERC20 tokens to receive ETH from ERC721 token purchase
-    function sellToken(uint256 _amount) external {
-        require(PropertyFinished == State.ended, "cash:vault not closed yet");
-        uint256 bal = balanceOf(msg.sender);
-        require(bal > 0, "cash:no tokens to cash out");
-
-        // decrement the token balance of the seller
-        balances[msg.sender] -= _amount;
-        
-        // increment the token balance of this contract
-        balances[address(this)] += _amount;
-
-
-        emit Transfer(msg.sender, address(this), _amount);
-
-        
-        // e.g. the user is selling 100 tokens, send them 500 wei
-        payable(msg.sender).transfer(amount * tokenPrice);
-
-    }
-
-    /// @notice send NFT to recipent address
-    function sendVaultNFT(address _recipenent) external onlyOwner {
-        require(auctionState == State.ended, "end:vault has already closed");
-        require(block.timestamp >= auctionEnd, "end:auction live");
+    /// @notice retieve contents of Vault to recipent address
+    function retrive(address _recipenent) external onlyOwner {
 
 
         // transfer erc721 to recipent
