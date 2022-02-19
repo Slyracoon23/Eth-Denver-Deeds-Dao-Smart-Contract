@@ -38,7 +38,7 @@ describe("ERC721 Token Vault contract", function() {
 
         ERC721_contract.setApprovalForAll(factory_contract.address, true);
 
-        factory_contract.mint("Test-NFT", "t-nft",ERC721_contract.address, 1, 1000, 100, 50);
+        factory_contract.mint("vault-NFT", "v-nft",ERC721_contract.address, 1);
 
         vault_address = await factory_contract.vaults(0);
 
@@ -53,28 +53,18 @@ describe("ERC721 Token Vault contract", function() {
     });
 
 
-    it("test kick Curator", async function() {
+    it("test Vault Key", async function() {
 
-        
+        expect(vault.name()).to.equal("vault-NFT");
 
 
-    });
-
-    it("test initial Reserve", async function() {
-
-        // reserve rpice here should not change
-        expect(await vault_address.reservePrice()).to.equal(100);
 
     });
-    
-    it("test factory ERC20 mint", async function() {
 
-        factory_contract.mint("Test-NFT", "t-nft",ERC721_contract.address, 1, 1000, 100, 50);
+    it("test valult open", async function() {
+        expect(vault.vaultClosed()).to.equal(false);
+    })
 
-        // expect vaultCount to be 1
-        expect(await factory_contract.vaultCount()).to.equal(1);
-
-    });
 
 
 

@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "./Interfaces/IWETH.sol";
-import "./Interfaces/IERC721.sol";
 import "./OpenZeppelin/math/Math.sol";
 import "./OpenZeppelin/token/ERC20/ERC20.sol";
 import "./OpenZeppelin/token/ERC721/ERC721.sol";
@@ -12,10 +11,10 @@ import "./OpenZeppelin/access/Ownable.sol";
 
 import "./Settings.sol";
 
-import "./OpenZeppelin/upgradeable/token/ERC721/utils/ERC721HolderUpgradeable.sol";
+import "./OpenZeppelin/upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "./OpenZeppelin/upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
-contract TokenVault is ERC721HolderUpgradeable {
+contract TokenVault is ERC721Upgradeable {
     using Address for address;
 
     /// -----------------------------------
@@ -51,17 +50,18 @@ contract TokenVault is ERC721HolderUpgradeable {
     event Redeem(address indexed redeemer);
 
  
-    constructor(address _settings) ERC721() {
+    constructor(address _settings) {
         settings = _settings;
     }
 
-    function initialize(address _curator, address _token, uint256 _id, uint256 _supply, uint256 _listPrice, uint256 _fee, string memory _name, string memory _symbol) external initializer {
+    function initialize(address _curator, address _token, uint256 _id, string memory _name, string memory _symbol) external initializer {
         // initialize inherited contracts
-        __ERC721Holder_init(_name, _symbol );
+        __ERC721_init(_name, _symbol );
         // set storage variables
         token = _token;
         id = _id;
 
+        /// set vault closed
         vaultClosed = false;
 
 
@@ -94,7 +94,7 @@ contract TokenVault is ERC721HolderUpgradeable {
 
 
     /// @notice retieve contents of Vault to recipent address
-    function Redeem() external  {
+    function redeem() external  {
         require(vaultClosed == false, "Redeem: Vault is closed");
         require(ownerOf(1) == msg.sender, "Redeem: sender is not owner of NFT vault");
 

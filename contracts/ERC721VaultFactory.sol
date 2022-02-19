@@ -23,7 +23,7 @@ contract ERC721VaultFactory is Ownable, Pausable {
   /// @notice the TokenVault logic contract
   address public immutable logic;
 
-  event Mint(address indexed token, uint256 id, uint256 price, address vault, uint256 vaultId);
+  event Mint(address indexed token, uint256 id, address vault, uint256 vaultId);
 
   constructor(address _settings) {
     settings = _settings;
@@ -35,20 +35,14 @@ contract ERC721VaultFactory is Ownable, Pausable {
   /// @param _symbol the desired sumbol of the vault
   /// @param _token the ERC721 token address fo the NFT
   /// @param _id the uint256 ID of the token
-  /// @param _supply is the initial total supply of the token
-  /// @param _listPrice the initial price of the NFT
-  /// @param _fee is the curators fee on creation
   /// @return the ID of the vault
-  function mint(string memory _name, string memory _symbol, address _token, uint256 _id, uint256 _supply, uint256 _listPrice, uint256 _fee) external whenNotPaused returns(uint256) {
+  function mint(string memory _name, string memory _symbol, address _token, uint256 _id) external whenNotPaused returns(uint256) {
     bytes memory _initializationCalldata =
       abi.encodeWithSignature(
-        "initialize(address,address,uint256,uint256,uint256,uint256,string,string)",
+        "initialize(address,address,uint256,string,string)",
           msg.sender,
           _token,
           _id,
-          _supply,
-          _listPrice,
-          _fee,
           _name,
           _symbol
     );
@@ -60,7 +54,7 @@ contract ERC721VaultFactory is Ownable, Pausable {
       )
     );
 
-    emit Mint(_token, _id, _listPrice, vault, vaultCount);
+    emit Mint(_token, _id, vault, vaultCount);
 
     IERC721(_token).safeTransferFrom(msg.sender, vault, _id);
     
