@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./Interfaces/IWETH.sol";
+import "./Interfaces/IERC721.sol";
 import "./OpenZeppelin/math/Math.sol";
 import "./OpenZeppelin/token/ERC20/ERC20.sol";
 import "./OpenZeppelin/token/ERC721/ERC721.sol";
@@ -14,19 +15,19 @@ import "./Settings.sol";
 import "./OpenZeppelin/upgradeable/token/ERC721/utils/ERC721HolderUpgradeable.sol";
 import "./OpenZeppelin/upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
-contract TokenVault is ERC721HolderUpgradeable, Ownable {
+contract TokenVault is ERC721HolderUpgradeable {
     using Address for address;
 
     /// -----------------------------------
     /// -------- BASIC INFORMATION --------
     /// -----------------------------------
 
-    /// @notice weth address
-    address public constant weth = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-
     /// -----------------------------------
     /// -------- TOKEN INFORMATION --------
     /// -----------------------------------
+
+    /// @notice the governance contract which gets paid in ETH
+    address public immutable settings;
 
     /// @notice the ERC721 token address of the vault's token
     address public token;
@@ -39,35 +40,18 @@ contract TokenVault is ERC721HolderUpgradeable, Ownable {
     /// -------- VAULT INFORMATION --------
     /// -----------------------------------
 
-    /// @notice the governance contract which gets paid in ETH
-    address public immutable settings;
-
-    /// @notice list price of entire NFT
-    uint245 public listPrice;
-
     /// @notice a boolean to indicate if the vault has closed
     bool public vaultClosed;
-
-    /// @notice the number of ownership tokens voting on the reserve price at any given time
-    uint256 public votingTokens;
-
-    /// @notice price of eth per ERC20 token 
-    uint256 public pricePerToken;
-
-    /// @notice maxTotalSupp of ERC20 token
-    uint256 public maxTotalSupply;
 
     /// ------------------------
     /// -------- EVENTS --------
     /// ------------------------
 
-    /// @notice An event emitted when someone redeems all tokens for the NFT
+    /// @notice An event emitted when someone redeems from the  NFT vault
     event Redeem(address indexed redeemer);
 
-    /// @notice An event emitted when someone cashes in ERC20 tokens for ETH from an ERC721 token sale
-    event Cash(address indexed owner, uint256 shares);
-
-    constructor(address _settings) {
+ 
+    constructor(address _settings) ERC721() {
         settings = _settings;
     }
 
@@ -77,6 +61,8 @@ contract TokenVault is ERC721HolderUpgradeable, Ownable {
         // set storage variables
         token = _token;
         id = _id;
+
+        vaultClosed = false;
 
 
         _mint(_curator, 1);
@@ -108,15 +94,19 @@ contract TokenVault is ERC721HolderUpgradeable, Ownable {
 
 
     /// @notice retieve contents of Vault to recipent address
-    function retrive(address _recipenent) external onlyOwner {
+    function Redeem() external  {
+        require(vaultClosed == false, "Redeem: Vault is closed");
+        require(ownerOf(1) == msg.sender, "Redeem: sender is not owner of NFT vault");
 
 
         // transfer erc721 to recipent
-        IERC721(token).transferFrom(address(this), _recipenent, id);
+        IERC721(token).transferFrom(address(this), msg.sender, id);
 
-        auctionState = State.ended;
+        vaultClosed = true;
 
-        emit NFTSent(winning, livePrice);
+
+
+        emit Redeem(msg.sender);
     }
 
 
