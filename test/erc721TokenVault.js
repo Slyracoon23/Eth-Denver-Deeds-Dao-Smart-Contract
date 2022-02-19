@@ -1,8 +1,9 @@
 const { expect, assert } = require("chai");
 const { ethers, artifacts } = require("hardhat");
+const 
 
 
-describe("ERC721 Vault Factory contract", function() {
+describe("ERC721 Token Vault contract", function() {
 
 
     let settings_contract;
@@ -13,6 +14,8 @@ describe("ERC721 Vault Factory contract", function() {
     let addr1;
     let addr2;
     let addrs;
+
+    let vault_address;
 
      /// @notice Depolyment on contract
      beforeEach(async function() {
@@ -36,31 +39,32 @@ describe("ERC721 Vault Factory contract", function() {
 
         ERC721_contract.setApprovalForAll(factory_contract.address, true);
 
-        
-        
-
-    });
-
-
-    /// -------------------------------
-    /// -------- GOV FUNCTIONS --------
-    /// -------------------------------
-
-    it("test NFT deployment", async function() {
-
-        expect(await ERC721_contract.name()).to.equal("Test-NFT");
-
-        expect(await ERC721_contract.ownerOf(1)).to.equal(owner.address);
-
-
-    });
-
-    it("test factory ERC20 mint", async function() {
-
         factory_contract.mint("Test-NFT", "t-nft",ERC721_contract.address, 1, 1000, 100, 50);
 
-        // expect vaultCount to be 1
-        expect(await factory_contract.vaultCount()).to.equal(1);
+        vault_address = await factory_contract.vaults(0);
+
+        // crete ERC721TokenVault
+        const token_vault = await ethers.getContractFactory("TokenVault");
+
+        vault2 = await token_vault.attach(
+            vault_address // The deployed contract address
+        );
+        
+
+    });
+
+
+    it("test kick Curator", async function() {
+
+        
+
+
+    });
+
+    it("test initial Reserve", async function() {
+
+        // reserve rpice here should not change
+        expect(await vault_address.reservePrice()).to.equal(100);
 
     });
     
