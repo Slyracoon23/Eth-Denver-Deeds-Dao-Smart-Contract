@@ -1,6 +1,5 @@
 const { expect, assert } = require("chai");
 const { ethers, artifacts } = require("hardhat");
-const 
 
 
 describe("ERC721 Token Vault contract", function() {
@@ -46,7 +45,7 @@ describe("ERC721 Token Vault contract", function() {
         // crete ERC721TokenVault
         const token_vault = await ethers.getContractFactory("TokenVault");
 
-        vault2 = await token_vault.attach(
+        vault = await token_vault.attach(
             vault_address // The deployed contract address
         );
         
