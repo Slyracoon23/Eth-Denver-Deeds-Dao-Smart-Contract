@@ -12,9 +12,10 @@ import "./OpenZeppelin/access/Ownable.sol";
 import "./Settings.sol";
 
 import "./OpenZeppelin/upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "./OpenZeppelin/upgradeable/token/ERC721/utils/ERC721HolderUpgradeable.sol";
 import "./OpenZeppelin/upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
-contract TokenVault is ERC721Upgradeable {
+contract TokenVault is ERC721Upgradeable, ERC721HolderUpgradeable {
     using Address for address;
 
     /// -----------------------------------
@@ -56,6 +57,7 @@ contract TokenVault is ERC721Upgradeable {
 
     function initialize(address _curator, address _token, uint256 _id, string memory _name, string memory _symbol) external initializer {
         // initialize inherited contracts
+        __ERC721Holder_init();
         __ERC721_init(_name, _symbol );
         // set storage variables
         token = _token;
