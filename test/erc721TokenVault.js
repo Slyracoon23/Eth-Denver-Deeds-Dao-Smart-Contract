@@ -16,6 +16,8 @@ describe("ERC721 Token Vault contract", function() {
 
     let vault_address;
 
+    let vault;
+
      /// @notice Depolyment on contract
      beforeEach(async function() {
         // Create accounts
@@ -33,6 +35,8 @@ describe("ERC721 Token Vault contract", function() {
         const ERC721 = await ethers.getContractFactory("SimpleERC721");
         ERC721_contract = await ERC721.deploy(); // Params are with the contract: ERC721("Test-NFT","t-nft")
 
+
+        ///////////////////////////////////////////////////////////////////
 
         ERC721_contract.mint(owner.address, 1);
 
@@ -55,16 +59,18 @@ describe("ERC721 Token Vault contract", function() {
 
     it("test Vault Key", async function() {
 
-        expect(vault.name()).to.equal("vault-NFT");
+        expect(await vault.name()).to.equal("vault-NFT");
 
 
 
     });
 
     it("test valult open", async function() {
-        expect(vault.vaultClosed()).to.equal(false);
+        expect(await vault.vaultClosed()).to.equal(false);
     })
 
+
+    it
 
 
 
