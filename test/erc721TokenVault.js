@@ -70,7 +70,17 @@ describe("ERC721 Token Vault contract", function() {
     })
 
 
-    it
+    it("test failure for redeem", async function(){
+        try{
+            await vault.connect(addr1).redeem();
+           
+            expect.fail("Should have thrown before");
+           } catch(error) {
+               
+           expect(error.message).to.have.string("Redeem: sender is not owner of NFT vault");
+
+       }
+    });
 
 
 
